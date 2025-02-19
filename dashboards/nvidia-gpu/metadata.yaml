@@ -1,0 +1,34 @@
+sample_dashboards:
+  -
+    category: NVIDIA GPUs
+    id: nvidia-overview
+    display_name: NVIDIA GPU Monitoring Overview (GCE & GKE)
+    description: |-
+      Displays GPU metrics for both GKE Nodes and GCE VMs.  GPU metrics for the GCE VMs require the Ops Agent to be installed.
+  -
+    category: NVIDIA GPUs
+    id: nvidia-dcgm
+    display_name: NVIDIA GPU Monitoring Advanced DCGM Metrics (GCE Only)
+    description: |-
+      Displays Advanced GPU metrics from NVIDIA Datacenter GPU Manager (DCGM).  This requires a specific setup (e.g. installing DCGM, installing the Ops Agent, and configuring it to receive DCGM metrics).
+    related_integrations:
+      - id: dcgm
+        platform: GCE
+  -
+    category: NVIDIA GPUs
+    id: nvidia-dcgm-prometheus
+    display_name: NVIDIA GPU Monitoring Advanced DCGM Metrics (GKE Only)
+    description: |-
+      Displays Advanced GPU metrics from NVIDIA Datacenter GPU Manager (DCGM).  This requires a specific setup (e.g. installing DCGM and DCGM exporter).
+    related_integrations:
+      - id: dcgm
+        platform: GKE
+  -
+    category: NVIDIA GPUs
+    id: nvidia-triton-prometheus
+    display_name: NVIDIA Triton Inference Server (GKE Only)
+    description: |-
+      Displays Triton Inference Server metrics. This requires your GKE cluster to have NVIDIA Triton installed and exporting metrics via Managed Prometheus.
+    related_integrations:
+      - id: nvidia-triton
+        platform: GKE

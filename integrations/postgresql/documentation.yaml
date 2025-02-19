@@ -1,0 +1,95 @@
+exporter_type: sidecar
+app_name_short: PostgreSQL
+app_name: {{app_name_short}}
+app_site_name: PostgreSQL
+app_site_url: https://www.postgresql.org/
+exporter_name: the PostgreSQL exporter
+exporter_pkg_name: postgres_exporter
+exporter_repo_url: https://github.com/prometheus-community/postgres_exporter
+dashboard_available: true
+minimum_exporter_version: v0.11.0
+multiple_dashboards: false
+dashboard_display_name: {{app_name_short}} Prometheus Overview
+config_mods: |
+  apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    name: postgresql
+  spec:
+    serviceName: postgresql
+    selector:
+      matchLabels:
+  +     app.kubernetes.io/name: postgresql
+    template:
+      metadata:
+        labels:
+  +       app.kubernetes.io/name: postgresql
+      spec:
+        containers:
+        - image: postgres:15.3
+          name: postgresql
+          env:
+          - name: POSTGRES_USER
+            value: root
+          - name: POSTGRES_PASSWORD
+            value: password
+          - name: POSTGRES_DB
+            value: dev
+  +     - name: exporter
+  +       image: quay.io/prometheuscommunity/postgres-exporter:v0.14.0
+  +       args:
+  +       - --collector.stat_statements
+  +       env:
+  +       - name: DATA_SOURCE_NAME
+  +         value: postgresql://root:password@localhost:5432/dev?sslmode=disable
+  +       ports:
+  +       - containerPort: 9187
+  +         name: prometheus
+podmonitoring_config: |
+  apiVersion: monitoring.googleapis.com/v1
+  kind: PodMonitoring
+  metadata:
+    name: postgresql
+    labels:
+      app.kubernetes.io/name: postgresql
+      app.kubernetes.io/part-of: google-cloud-managed-prometheus
+  spec:
+    endpoints:
+    - port: prometheus
+      scheme: http
+      interval: 30s
+      path: /metrics
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: postgresql
+additional_prereq_info: |
+  For information about creating a least-privileged user, see [Running as non-superuser](https://github.com/prometheus-community/postgres_exporter#running-as-non-superuser){:class=external}.
+additional_install_info: |
+  Update the `DATA_SOURCE_NAME` environment variable with credentials that work with your {{app_name}} instance.
+sample_promql_query: up{job="postgresql", cluster="{{cluster_name}}", namespace="{{namespace_name}}"}
+alerts_config: |
+  apiVersion: monitoring.googleapis.com/v1
+  kind: Rules
+  metadata:
+    name: postgresql-rules
+    labels:
+      app.kubernetes.io/component: rules
+      app.kubernetes.io/name: postgresql-rules
+      app.kubernetes.io/part-of: google-cloud-managed-prometheus
+  spec:
+    groups:
+    - name: postgresql
+      interval: 30s
+      rules:
+      - alert: PostgreSQLDatabaseSizeTooLarge
+        annotations:
+          description: |-
+            PostgreSQL database size too large
+              VALUE = {{ $value }}
+              LABELS: {{ $labels }}
+          summary: PostgreSQL database size too large (instance {{ $labels.instance }})
+        expr: pg_database_size_bytes > 100000000000
+        for: 5m
+        labels:
+          severity: warning
+additional_alert_info: You can adjust the alert thresholds to suit your application.
