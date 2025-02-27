@@ -1,0 +1,154 @@
+exporter_type: sidecar
+app_name_short: Redis
+app_name: {{app_name_short}}
+app_site_name: Redis
+app_site_url: https://www.redis.com/
+exporter_name: the Redis exporter
+exporter_pkg_name: redis_exporter
+exporter_repo_url: https://github.com/oliver006/redis_exporter
+dashboard_available: true
+minimum_exporter_version: v1.43.1
+multiple_dashboards: false
+dashboard_display_name: {{app_name_short}} Prometheus Overview
+config_mods: |
+  apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    name: redis
+  spec:
+    serviceName: redis
+    selector:
+      matchLabels:
+  +     app.kubernetes.io/name: redis
+    template:
+      metadata:
+        labels:
+  +       app.kubernetes.io/name: redis
+      spec:
+        containers:
+        - name: redis
+          image: "redis:6.2"
+          ports:
+          - containerPort: 6379
+  +     - name: redis-exporter
+  +       image: oliver006/redis_exporter:v1.43.1
+  +       args: [--include-system-metrics]
+  +       resources:
+  +         requests:
+  +           cpu: 100m
+  +           memory: 100Mi
+  +       ports:
+  +       - containerPort: 9121
+  +         name: prometheus
+additional_install_info: |
+  These instructions assume you already have a working {{app_name_short}}
+  installation and want to modify it to include an exporter. If you need to
+  also set up {{app_name_short}}, you can configure and apply the
+  [Bitnami Helm chart](https://github.com/bitnami/charts/tree/master/bitnami/redis){:class=external}.
+  Pass in the following configuration values:
+  <ul>
+    <li><code>metrics.enabled = true</code></li>
+    <li><code>metrics.podLabels = {app.kubernetes.io/name: redis}</code></li>
+  </ul>
+podmonitoring_config: |
+  apiVersion: monitoring.googleapis.com/v1
+  kind: PodMonitoring
+  metadata:
+    name: redis
+    labels:
+      app.kubernetes.io/name: redis
+      app.kubernetes.io/part-of: google-cloud-managed-prometheus
+  spec:
+    endpoints:
+    - port: prometheus
+      scheme: http
+      interval: 30s
+      path: /metrics
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: redis
+sample_promql_query: up{job="redis", cluster="{{cluster_name}}", namespace="{{namespace_name}}"}
+alerts_config: |
+  apiVersion: monitoring.googleapis.com/v1
+  kind: Rules
+  metadata:
+    name: redis-rules
+    labels:
+      app.kubernetes.io/component: rules
+      app.kubernetes.io/name: redis-rules
+      app.kubernetes.io/part-of: google-cloud-managed-prometheus
+  spec:
+    groups:
+    - name: redis
+      interval: 30s
+      rules:
+      - alert: RedisDown
+        annotations:
+          description: |-
+            Redis instance is down
+              VALUE = {{ $value }}
+              LABELS: {{ $labels }}
+          summary: Redis down (instance {{ $labels.instance }})
+        expr: redis_up{job="redis"} == 0
+        for: 5m
+        labels:
+          severity: critical
+      - alert: RedisOutOfMemory
+        annotations:
+          description: |-
+            Redis is running out of memory (> 90%)
+              VALUE = {{ $value }}
+              LABELS: {{ $labels }}
+          summary: Redis out of memory (instance {{ $labels.instance }})
+        expr: redis_memory_used_bytes{job="redis"} / redis_total_system_memory_bytes{job="redis"}
+          * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+      - alert: RedisTooManyConnections
+        annotations:
+          description: |-
+            Redis instance has too many connections
+              VALUE = {{ $value }}
+              LABELS: {{ $labels }}
+          summary: Redis too many connections (instance {{ $labels.instance }})
+        expr: redis_connected_clients{job="redis"} > 100
+        for: 5m
+        labels:
+          severity: warning
+      - alert: RedisClusterSlotFail
+        annotations:
+          description: |-
+            Redis cluster has slots fail
+              VALUE = {{ $value }}
+              LABELS: {{ $labels }}
+          summary: Number of hash slots mapping to a node in FAIL state (instance {{ $labels.instance }})
+        expr: redis_cluster_slots_fail{job="redis"} > 0
+        for: 5m
+        labels:
+          severity: warning
+      - alert: RedisClusterSlotPfail
+        annotations:
+          description: |-
+            Redis cluster has slots pfail
+              VALUE = {{ $value }}
+              LABELS: {{ $labels }}
+          summary: Number of hash slots mapping to a node in PFAIL state (instance {{ $labels.instance }})
+        expr: redis_cluster_slots_pfail{job="redis"} > 0
+        for: 5m
+        labels:
+          severity: warning
+      - alert: RedisClusterStateNotOk
+        annotations:
+          description: |-
+            Redis cluster is not ok
+              VALUE = {{ $value }}
+              LABELS: {{ $labels }}
+          summary: Redis cluster state is not ok (instance {{ $labels.instance }})
+        expr: redis_cluster_state{job="redis"} == 0
+        for: 5m
+        labels:
+          severity: critical
+      - expr: redis_memory_used_rss_bytes{job="redis"} / redis_memory_used_bytes{job="redis"}
+        record: redis_memory_fragmentation_ratio
+additional_alert_info: You can adjust the alert thresholds to suit your application.

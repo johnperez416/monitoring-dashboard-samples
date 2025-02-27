@@ -18,3 +18,21 @@ sample_dashboards:
     related_integrations:
       - id: flink
         platform: GCE
+  -
+    category: Flink
+    id: flink-job-manager-prometheus
+    display_name: Flink Job Manager Prometheus Overview
+    description: |-
+      This dashboard is based on prometheus metrics exposed by [Apache Flink](https://nightlies.apache.org/flink/flink-docs-release-1.7/monitoring/metrics.html#prometheus-orgapacheflinkmetricsprometheusprometheusreporter). This dashboard has charts displaying: Registered Task Managers, Running Jobs, Task Slots Available, Task Slots Total, JVM CPU Load, JVM CPU Time, JVM Threads, JVM Heap Used (bytes), JVM Heap Committed (bytes), JVM Heap Max (bytes), JVM Nonheap Used (bytes), JVM Nonheap Committed (bytes), JVM Nonheap Max (bytes), JVM Metaspace Used (bytes), JVM Metaspace Committed (bytes), JVM Metaspace Max (bytes), JVM Direct Used (bytes), JVM Direct Total Capacity (bytes), JVM Mapped Used (bytes), JVM Mapped Total Capacity (bytes), JVM Garbage Collector Time, JVM Garbage Collector Count, and JVM Class Loader.
+    related_integrations:
+      - id: flink
+        platform: GKE
+  -
+    category: Flink
+    id: flink-task-manager-prometheus
+    display_name: Flink Task Manager Prometheus Overview
+    description: |-
+      This dashboard is based on prometheus metrics exposed by [Apache Flink](https://nightlies.apache.org/flink/flink-docs-release-1.7/monitoring/metrics.html#prometheus-orgapacheflinkmetricsprometheusprometheusreporter). This dashboard has charts displaying: Managed Memory Utilization %, JVM Heap Utilization %, JVM Nonheap Utilization %, JVM Metaspace Utilization %, Managed Memory Used, Managed Memory Total, JVM CPU Load, JVM CPU Time, JVM Threads, JVM Heap Used (bytes), JVM Heap Committed (bytes), JVM Heap Max (bytes), JVM Nonheap Used (bytes), JVM Nonheap Committed (bytes), JVM Nonheap Max (bytes), JVM Metaspace Used (bytes), JVM Metaspace Committed (bytes), JVM Metaspace Max (bytes), JVM Direct Used (bytes), JVM Direct Total Capacity (bytes), JVM Mapped Used (bytes), JVM Mapped Total Capacity (bytes), JVM Garbage Collector Time, JVM Garbage Collector Count, JVM Class Loader, Netty Shuffle Available Memory (bytes), Netty Shuffle Used Memory (bytes), Netty Shuffle Total Memory (bytes), Netty Shuffle Available Memory Segments, Netty Shuffle Used Memory Segments, and Netty Shuffle Total Memory Segments.
+    related_integrations:
+      - id: flink
+        platform: GKE
