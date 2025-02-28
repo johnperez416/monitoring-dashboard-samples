@@ -1,7 +1,54 @@
 alert_policy_templates:
 -
   id: exceeded-quota
-  display_name: Quota Exceeded Alert Policy
   description: "Alert policy for exceeding quota limit"
+  version: 1
+-
+  id: single-allocation-quota
+  description: "Monitoring allocation quota usage and will notify you if the usage rises above alert trigger threshold."
+  version: 1
+-
+  id: single-daily-rate-quota
+  description: "Monitoring daily rate quota usage and will notify you if the usage rises above alert trigger threshold."
+  version: 1
+-
+  id: single-per-minute-rate-quota
+  description: "Monitoring per-minute rate quota usage and will notify you if the usage rises above alert trigger threshold."
+  version: 1
+-
+  id: single-per-second-rate-quota
+  description: "Monitoring per-second rate quota usage and will notify you if the usage rises above alert trigger threshold."
+  version: 1
+-
+  id: quota-usage-mql
+  description: "This policy will notify you if quota usage reaches the alert trigger threshold of 80%. Expand the drop-down below if you would like to edit the alert trigger threshold or further customize this alert policy."
+  version: 1
+-
+  id: all-adjustments-by-quota-adjuster
+  description: "Monitor quota adjuster activity and the notifications channel will alert you to all adjustments."
+  version: 1
+-
+  id: quota-adjuster-errors-and-failures
+  description: "Monitor quota use across projects and the notifications channel will alert you to any failures or errors encountered while adjusting your quotas."
+  version: 1
+-
+  id: qa-scoped-limit-location-all-adjustments
+  description: "Monitor quota adjuster activity and the notifications channel will alert you to all adjustments."
+  version: 1
+-
+  id: qa-scoped-limit-location-all-failures
+  description: "Monitor quota usage across projects and the notifications channel will alert you to any failures or errors encountered while adjusting your quotas."
+  version: 1
+-
+  id: qa-scoped-limit-all-adjustments
+  description: "Monitor quota adjuster activity and the notifications channel will alert you to all adjustments."
+  version: 1
+-
+  id: qa-scoped-limit-all-failures
+  description: "Monitor quota use across projects and the notifications channel will alert you to any failures or errors encountered while adjusting your quotas."
+  version: 1
+-
+  id: quota-usage-promql
+  description: "This policy will notify you if quota usage reaches the alert trigger threshold of 80%. Expand the drop-down below if you would like to edit the alert trigger threshold or further customize this alert policy. The query will be written in PromQL."
   version: 1
 
