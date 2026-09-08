@@ -20,3 +20,10 @@ alert_policy_templates:
     related_integrations:
       - id: google_agent_for_sap
         platform: GCP
+  - id: "host-memory-alert"
+    display_name: "Host Memory Alert"
+    description: "Alerts whenever an uncorrectable host memory error event is detected on an SAP HANA VM instance."
+    version: 1
+    related_integrations:
+      - id: google_agent_for_sap
+        platform: GCP
